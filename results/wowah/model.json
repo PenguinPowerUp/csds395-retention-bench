@@ -1,0 +1,71 @@
+{
+  "model_version": "wowah-2026-11-07",
+  "features": [
+    "sessions",
+    "session_minutes",
+    "snapshots",
+    "levels_gained",
+    "zones"
+  ],
+  "transform": "log1p, then (u - mean) / scale with the train statistics below",
+  "mean": {
+    "sessions": 0.802142,
+    "session_minutes": 3.511494,
+    "snapshots": 1.545997,
+    "levels_gained": 0.77208,
+    "zones": 0.766146
+  },
+  "scale": {
+    "sessions": 0.235972,
+    "session_minutes": 1.137311,
+    "snapshots": 0.909232,
+    "levels_gained": 0.822116,
+    "zones": 0.200831
+  },
+  "coefficients": {
+    "sessions": 0.183565,
+    "session_minutes": -2.700066,
+    "snapshots": 3.13486,
+    "levels_gained": 0.610997,
+    "zones": -0.104195
+  },
+  "intercept": -1.158329,
+  "calibration": {
+    "method": "platt",
+    "a": 0.892172,
+    "c": -0.013341,
+    "applies_to": "logit of P(return)"
+  },
+  "threshold": {
+    "value": 0.236966,
+    "rule": "max-F1 on validation",
+    "predict_return_if": ">= value"
+  },
+  "output": "P(return); churn probability is 1 - P(return)",
+  "split": {
+    "train": {
+      "first_cohort_date": "2006-01-01",
+      "last_cohort_date": "2007-08-21",
+      "cohort_dates": 583,
+      "rows": 47655
+    },
+    "validation": {
+      "first_cohort_date": "2007-08-22",
+      "last_cohort_date": "2008-06-02",
+      "cohort_dates": 273,
+      "rows": 15940
+    },
+    "test": {
+      "first_cohort_date": "2008-06-03",
+      "last_cohort_date": "2009-01-09",
+      "cohort_dates": 216,
+      "rows": 15902
+    }
+  },
+  "test": {
+    "pr_auc": 0.5578,
+    "pr_auc_floor": 0.2071,
+    "roc_auc": 0.8026,
+    "brier_calibrated": 0.1252
+  }
+}

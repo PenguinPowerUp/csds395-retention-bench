@@ -1,0 +1,444 @@
+{
+  "title": "retention-bench: day-one return on WoWAH (Lee et al., MMSys 2011), new avatars, temporal split",
+  "dataset": {
+    "name": "World of Warcraft Avatar History (WoWAH)",
+    "citation": "Y.-T. Lee, K.-T. Chen, Y.-M. Cheng, C.-L. Lei. World of Warcraft Avatar History Dataset. Proc. ACM MMSys 2011.",
+    "source": "https://web.cs.wpi.edu/~claypool/mmsys-dataset/2011/wow/",
+    "unit": "avatar (character), one realm, Horde; a new avatar is not necessarily a new player",
+    "clock": "dataset-native query time; days are calendar days in that clock"
+  },
+  "generated_at": "2026-11-07T16:47:40Z",
+  "environment": {
+    "python": "3.14.6",
+    "scikit-learn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.4"
+  },
+  "label": {
+    "definition": "docs/algorithm.md",
+    "max_first_level": 5,
+    "horizon_days": 1
+  },
+  "features": [
+    "sessions",
+    "session_minutes",
+    "snapshots",
+    "levels_gained",
+    "zones"
+  ],
+  "positive_class": "returned = 1",
+  "population": {
+    "eligible": 79497,
+    "returning": 21399,
+    "returning_rate": 0.2692,
+    "returning_rate_by_cohort_year": {
+      "2006": {
+        "eligible": 21847,
+        "returning_rate": 0.2936
+      },
+      "2007": {
+        "eligible": 34714,
+        "returning_rate": 0.275
+      },
+      "2008": {
+        "eligible": 22539,
+        "returning_rate": 0.2375
+      },
+      "2009": {
+        "eligible": 397,
+        "returning_rate": 0.2091
+      }
+    },
+    "returning_rate_by_split": {
+      "train": 0.2766,
+      "validation": 0.309,
+      "test": 0.2071
+    },
+    "midnight": {
+      "share_online_in_last_10_min_of_cohort_day": 0.0926,
+      "return_rate_online_at_midnight": 0.8988,
+      "return_rate_others": 0.2049
+    },
+    "counts": {
+      "new_avatars": 79659,
+      "excluded_right_censored": 3,
+      "excluded_outage_day": 159,
+      "excluded_partial_outage": 0,
+      "excluded_online_at_midnight": 0,
+      "eligible": 79497,
+      "empty_days": [
+        "2006-04-22",
+        "2007-01-21",
+        "2007-03-21",
+        "2007-03-22",
+        "2007-03-23",
+        "2007-05-26",
+        "2007-05-27",
+        "2007-05-28",
+        "2007-05-29",
+        "2007-05-30",
+        "2008-04-04",
+        "2008-04-05",
+        "2008-04-06",
+        "2008-05-01",
+        "2008-05-02",
+        "2008-05-03",
+        "2008-05-04",
+        "2008-05-05",
+        "2008-05-17",
+        "2008-05-18",
+        "2008-06-14",
+        "2008-06-15",
+        "2008-06-16",
+        "2008-06-17"
+      ]
+    },
+    "split": {
+      "train": {
+        "first_cohort_date": "2006-01-01",
+        "last_cohort_date": "2007-08-21",
+        "cohort_dates": 583,
+        "rows": 47655
+      },
+      "validation": {
+        "first_cohort_date": "2007-08-22",
+        "last_cohort_date": "2008-06-02",
+        "cohort_dates": 273,
+        "rows": 15940
+      },
+      "test": {
+        "first_cohort_date": "2008-06-03",
+        "last_cohort_date": "2009-01-09",
+        "cohort_dates": 216,
+        "rows": 15902
+      }
+    }
+  },
+  "models": [
+    {
+      "name": "majority class (everyone churns)",
+      "pr_auc": 0.2071,
+      "pr_auc_floor": 0.2071,
+      "roc_auc": 0.5,
+      "brier": 0.1691,
+      "accuracy": 0.7929
+    },
+    {
+      "name": "session_minutes (single feature)",
+      "pr_auc": 0.5264,
+      "pr_auc_floor": 0.2071,
+      "roc_auc": 0.7711,
+      "brier": 0.131
+    },
+    {
+      "name": "logistic regression (L2)",
+      "pr_auc": 0.5578,
+      "pr_auc_floor": 0.2071,
+      "roc_auc": 0.8026,
+      "brier": 0.1245
+    },
+    {
+      "name": "logistic regression (Platt-calibrated)",
+      "pr_auc": 0.5578,
+      "pr_auc_floor": 0.2071,
+      "roc_auc": 0.8026,
+      "brier": 0.1252
+    }
+  ],
+  "calibration": {
+    "method": "Platt (sigmoid) on the logistic model's logit, fit on validation",
+    "slope": 0.8922,
+    "intercept": -0.0133,
+    "brier_before": 0.1245,
+    "brier_after": 0.1252,
+    "reliability_test": [
+      {
+        "bin": "0-0.1",
+        "players": 294,
+        "returning": 26,
+        "not_returning": 268,
+        "mean_predicted": 0.0816,
+        "observed_returning": 0.0884
+      },
+      {
+        "bin": "0.1-0.2",
+        "players": 10731,
+        "returning": 906,
+        "not_returning": 9825,
+        "mean_predicted": 0.1375,
+        "observed_returning": 0.0844
+      },
+      {
+        "bin": "0.2-0.3",
+        "players": 1478,
+        "returning": 461,
+        "not_returning": 1017,
+        "mean_predicted": 0.2449,
+        "observed_returning": 0.3119
+      },
+      {
+        "bin": "0.3-0.4",
+        "players": 980,
+        "returning": 413,
+        "not_returning": 567,
+        "mean_predicted": 0.3482,
+        "observed_returning": 0.4214
+      },
+      {
+        "bin": "0.4-0.5",
+        "players": 789,
+        "returning": 416,
+        "not_returning": 373,
+        "mean_predicted": 0.4467,
+        "observed_returning": 0.5272
+      },
+      {
+        "bin": "0.5-0.6",
+        "players": 564,
+        "returning": 302,
+        "not_returning": 262,
+        "mean_predicted": 0.5461,
+        "observed_returning": 0.5355
+      },
+      {
+        "bin": "0.6-0.7",
+        "players": 448,
+        "returning": 292,
+        "not_returning": 156,
+        "mean_predicted": 0.6459,
+        "observed_returning": 0.6518
+      },
+      {
+        "bin": "0.7-0.8",
+        "players": 362,
+        "returning": 273,
+        "not_returning": 89,
+        "mean_predicted": 0.7474,
+        "observed_returning": 0.7541
+      },
+      {
+        "bin": "0.8-0.9",
+        "players": 223,
+        "returning": 182,
+        "not_returning": 41,
+        "mean_predicted": 0.8444,
+        "observed_returning": 0.8161
+      },
+      {
+        "bin": "0.9-1",
+        "players": 33,
+        "returning": 23,
+        "not_returning": 10,
+        "mean_predicted": 0.9166,
+        "observed_returning": 0.697
+      }
+    ]
+  },
+  "threshold": {
+    "model": "logistic regression (Platt-calibrated)",
+    "rule": "the calibrated P(return) cut that maximises F1 on the validation split, predicting returning at or above it; test labels never reach the choice",
+    "chosen_on": "validation",
+    "value": 0.237,
+    "majority_accuracy": 0.7929,
+    "test": {
+      "accuracy": 0.8011,
+      "precision": 0.5155,
+      "recall": 0.663,
+      "f1": 0.58,
+      "confusion": {
+        "tp": 2184,
+        "fp": 2053,
+        "fn": 1110,
+        "tn": 10555
+      }
+    }
+  },
+  "lift_test": {
+    "method": "deciles of calibrated P(return) on test, decile 1 the highest; adjacent deciles merged until every count meets the minimum, jointly with the other tables; lift = group return rate / test return rate",
+    "deciles": [
+      {
+        "score_band": "0.5056-1",
+        "players": 1590,
+        "returning": 1055,
+        "not_returning": 535,
+        "deciles": "1",
+        "return_rate": 0.6635,
+        "lift": 3.2031
+      },
+      {
+        "score_band": "0.3219-0.5056",
+        "players": 1590,
+        "returning": 742,
+        "not_returning": 848,
+        "deciles": "2",
+        "return_rate": 0.4667,
+        "lift": 2.253
+      },
+      {
+        "score_band": "0.2047-0.3219",
+        "players": 1590,
+        "returning": 539,
+        "not_returning": 1051,
+        "deciles": "3",
+        "return_rate": 0.339,
+        "lift": 1.6365
+      },
+      {
+        "score_band": "0.1524-0.2047",
+        "players": 1590,
+        "returning": 293,
+        "not_returning": 1297,
+        "deciles": "4",
+        "return_rate": 0.1843,
+        "lift": 0.8897
+      },
+      {
+        "score_band": "0.1341-0.1524",
+        "players": 7442,
+        "returning": 483,
+        "not_returning": 6959,
+        "deciles": "5-9",
+        "return_rate": 0.0649,
+        "lift": 0.3133
+      },
+      {
+        "score_band": "0.125-0.1341",
+        "players": 511,
+        "returning": 49,
+        "not_returning": 462,
+        "deciles": "9-10",
+        "return_rate": 0.0959,
+        "lift": 0.463
+      },
+      {
+        "score_band": "0-0.125",
+        "players": 1589,
+        "returning": 133,
+        "not_returning": 1456,
+        "deciles": "10",
+        "return_rate": 0.0837,
+        "lift": 0.4041
+      }
+    ],
+    "top": {
+      "deciles": "1",
+      "lift": 3.2031
+    }
+  },
+  "min_cell": 10,
+  "suppression": "every cut used by the reliability bins, the decile groups and the threshold is checked together; each band between consecutive cuts holds at least 10 returning and 10 not-returning players, so no count under the minimum is recoverable by differencing tables",
+  "standardized_coefficients": {
+    "sessions": 0.1836,
+    "session_minutes": -2.7001,
+    "snapshots": 3.1349,
+    "levels_gained": 0.611,
+    "zones": -0.1042
+  },
+  "intercept": -1.1583,
+  "hyperparameters": {
+    "penalty": "l2",
+    "C": 1.0,
+    "inputs": "log1p, standardized with train statistics"
+  },
+  "leakage_check": {
+    "method": "identical features and model, rows assigned to train/validation/test uniformly at random with the same fractions; a large gain over the temporal split indicates time-correlated information the temporal split correctly withholds",
+    "random_split": {
+      "pr_auc": 0.5933,
+      "pr_auc_floor": 0.27,
+      "roc_auc": 0.7897,
+      "brier_calibrated": 0.1529,
+      "pr_auc_over_floor": 2.197
+    },
+    "temporal_split": {
+      "pr_auc": 0.5578,
+      "pr_auc_floor": 0.2071,
+      "roc_auc": 0.8026,
+      "brier_calibrated": 0.1252,
+      "pr_auc_over_floor": 2.693
+    }
+  },
+  "sensitivity": {
+    "first_level_1_only": {
+      "eligible": 59542,
+      "returning_rate": 0.2437,
+      "pr_auc": 0.5238,
+      "pr_auc_floor": 0.1736,
+      "roc_auc": 0.7963,
+      "brier_calibrated": 0.1104,
+      "counts": {
+        "new_avatars": 59654,
+        "excluded_right_censored": 2,
+        "excluded_outage_day": 110,
+        "excluded_partial_outage": 0,
+        "excluded_online_at_midnight": 0,
+        "eligible": 59542
+      }
+    },
+    "drop_half_empty_next_day": {
+      "eligible": 77464,
+      "returning_rate": 0.2714,
+      "pr_auc": 0.5686,
+      "pr_auc_floor": 0.2127,
+      "roc_auc": 0.8057,
+      "brier_calibrated": 0.1266,
+      "counts": {
+        "new_avatars": 79659,
+        "excluded_right_censored": 3,
+        "excluded_outage_day": 159,
+        "excluded_partial_outage": 2033,
+        "excluded_online_at_midnight": 0,
+        "eligible": 77464
+      }
+    },
+    "strict_return_new_session_next_day": {
+      "eligible": 79497,
+      "returning_rate": 0.2438,
+      "pr_auc": 0.5145,
+      "pr_auc_floor": 0.1879,
+      "roc_auc": 0.7973,
+      "brier_calibrated": 0.1201,
+      "counts": {
+        "new_avatars": 79659,
+        "excluded_right_censored": 3,
+        "excluded_outage_day": 159,
+        "excluded_partial_outage": 0,
+        "excluded_online_at_midnight": 0,
+        "eligible": 79497
+      }
+    },
+    "drop_avatars_online_at_midnight": {
+      "eligible": 72136,
+      "returning_rate": 0.2049,
+      "pr_auc": 0.4576,
+      "pr_auc_floor": 0.1614,
+      "roc_auc": 0.7791,
+      "brier_calibrated": 0.1103,
+      "counts": {
+        "new_avatars": 79659,
+        "excluded_right_censored": 3,
+        "excluded_outage_day": 159,
+        "excluded_partial_outage": 0,
+        "excluded_online_at_midnight": 7361,
+        "eligible": 72136
+      }
+    },
+    "without_snapshots_feature": {
+      "features": [
+        "sessions",
+        "session_minutes",
+        "levels_gained",
+        "zones"
+      ],
+      "pr_auc": 0.5473,
+      "pr_auc_floor": 0.2071,
+      "roc_auc": 0.7826,
+      "brier_calibrated": 0.1269,
+      "standardized_coefficients": {
+        "sessions": 0.2418,
+        "session_minutes": 0.2649,
+        "levels_gained": 0.6953,
+        "zones": -0.0021
+      }
+    }
+  }
+}
