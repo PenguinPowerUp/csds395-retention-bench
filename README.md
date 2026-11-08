@@ -31,7 +31,7 @@ Then, with the environment active:
 ./run.sh
 ```
 
-`./run.sh` downloads and extracts the archive (577 MB) into `data/raw/`, parses the 10-minute snapshot logs into `data/snapshots.parquet`, builds the label and features, fits the four models, writes `results/wowah/`, recounts the population by an independent route and checks it against the results, and runs the unit tests.
+`./run.sh` first runs the unit tests and stops if any fails. It then downloads and extracts the archive (577 MB) into `data/raw/`, parses the 10-minute snapshot logs into `data/snapshots.parquet`, builds the label and features, fits the four models, writes `results/wowah/`, and recounts the population by an independent route and checks it against the results.
 
 ## Method
 
