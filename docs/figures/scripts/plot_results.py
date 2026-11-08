@@ -1,13 +1,14 @@
-"""Render the reliability diagram and the decile lift chart from results.json.
+"""Draw the reliability diagram and the decile lift chart from results/wowah/results.json.
 
-Usage: python scripts/plot_results.py results/wowah
-Reads only published aggregates, so the figures obey the same suppression as the tables.
+Run from anywhere after the pipeline has written results.json:
+    python docs/figures/scripts/plot_results.py
+Writes reliability.png and decile_lift.png into docs/figures/. Reads only the published
+aggregates, so the figures obey the same suppression as the tables.
 """
 
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 
 import matplotlib
@@ -48,11 +49,15 @@ def lift(res: dict, out: Path) -> None:
     fig.tight_layout(); fig.savefig(out / "decile_lift.png", dpi=150); plt.close(fig)
 
 
+FIGURES = Path(__file__).resolve().parents[1]
+RESULTS = FIGURES.parents[1] / "results" / "wowah" / "results.json"
+
+
 def main() -> None:
-    d = Path(sys.argv[1] if len(sys.argv) > 1 else "results/wowah")
-    res = json.loads((d / "results.json").read_text())
-    reliability(res, d); lift(res, d)
-    print("wrote", d / "reliability.png", d / "decile_lift.png")
+    res = json.loads(RESULTS.read_text())
+    reliability(res, FIGURES)
+    lift(res, FIGURES)
+    print("wrote", FIGURES / "reliability.png", FIGURES / "decile_lift.png")
 
 
 if __name__ == "__main__":

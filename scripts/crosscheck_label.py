@@ -14,8 +14,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-data = Path(sys.argv[1] if len(sys.argv) > 1 else "data")
-res = json.loads(Path(sys.argv[2] if len(sys.argv) > 2 else "results/wowah/results.json").read_text())
+_, data_arg, results_arg = sys.argv  # usage: crosscheck_label.py DATA_DIR RESULTS_JSON
+data = Path(data_arg)
+res = json.loads(Path(results_arg).read_text())
 max_first_level = res["label"]["max_first_level"]
 
 snap = pd.read_parquet(data / "snapshots.parquet", columns=["ts", "avatar", "level"])
@@ -49,8 +50,8 @@ print(f"empty days        crosscheck={len(empty)}  pipeline={len(pop['counts']['
 print(f"eligible          crosscheck={eligible}  pipeline={pop['eligible']}")
 print(f"returning         crosscheck={returning}  pipeline={pop['returning']}")
 print(f"returning rate    crosscheck={returning/eligible:.4f}  pipeline={pop['returning_rate']}")
-print(f"right-censored    crosscheck={censored}  pipeline={pop['counts']['excluded_right_censored']}")
-print(f"outage-excluded   crosscheck={outage}  pipeline={pop['counts']['excluded_outage_day']}")
-ok = (eligible == pop["eligible"] and returning == pop["returning"] and censored == pop["counts"]["excluded_right_censored"] and outage == pop["counts"]["excluded_outage_day"])
+excluded = censored + outage
+print(f"next day not obs. crosscheck={excluded}  pipeline={pop['counts']['excluded_next_day_not_observed']}  (local only: {censored} censored + {outage} outage)")
+ok = (eligible == pop["eligible"] and returning == pop["returning"] and excluded == pop["counts"]["excluded_next_day_not_observed"])
 print("MATCH" if ok else "MISMATCH")
 sys.exit(0 if ok else 1)

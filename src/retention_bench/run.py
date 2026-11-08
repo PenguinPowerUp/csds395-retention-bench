@@ -76,14 +76,27 @@ def build_population(pad: pd.DataFrame, first: pd.DataFrame, spd: pd.Series, max
         "features": feats.reset_index(drop=True),
         "counts": {
             "new_avatars": n_new,
-            "excluded_right_censored": censored,
-            "excluded_outage_day": outage,
+            # Right-censored and outage-day exclusions are published only as their sum: the
+            # censored group alone is a handful of avatars and must not appear as its own count.
+            "excluded_next_day_not_observed": censored + outage,
             "excluded_partial_outage": dropped_partial,
             "excluded_online_at_midnight": dropped_midnight,
             "eligible": int(len(feats)),
             "empty_days": [str(d.date()) for d in lab.empty_days],
         },
     }
+
+
+MIN_PUBLISHED_COUNT = 10
+
+
+def check_published_counts(results: dict) -> None:
+    """Refuse to write a population count between 1 and 9 anywhere in the counts blocks."""
+    blocks = [results["population"]["counts"]] + [v["counts"] for v in results["sensitivity"].values() if "counts" in v]
+    for block in blocks:
+        for k, v in block.items():
+            if isinstance(v, int) and 0 < v < MIN_PUBLISHED_COUNT:
+                raise SystemExit(f"refusing to publish count {k}={v}: below {MIN_PUBLISHED_COUNT}")
 
 
 def late_on_day(pad: pd.DataFrame) -> pd.Series:
@@ -167,8 +180,8 @@ def headline(res: dict) -> dict:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--data", type=Path, default=Path("data"))
-    ap.add_argument("--out", type=Path, default=Path("results/wowah"))
+    ap.add_argument("--data", type=Path, required=True)
+    ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--max-first-level", type=int, default=sessions.MAX_FIRST_LEVEL)
     ap.add_argument("--no-sensitivity", action="store_true")
     a = ap.parse_args(argv)
@@ -224,7 +237,7 @@ def main(argv: list[str] | None = None) -> None:
         },
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "environment": {"python": platform.python_version(), "scikit-learn": sklearn.__version__, "pandas": pd.__version__, "numpy": np.__version__},
-        "label": {"definition": "docs/algorithm.md", "max_first_level": a.max_first_level, "horizon_days": 1},
+        "label": {"max_first_level": a.max_first_level, "horizon_days": 1},
         "features": list(features),
         "positive_class": "returned = 1",
         "population": {
@@ -245,6 +258,7 @@ def main(argv: list[str] | None = None) -> None:
         },
         "sensitivity": sensitivity,
     }
+    check_published_counts(results)
     (a.out / "results.json").write_text(json.dumps(results, indent=2))
 
     sc, pl, l2 = res["_scaler"], res["_platt"], res["_l2"]

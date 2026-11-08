@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import shutil
 import subprocess
 import sys
 import urllib.request
@@ -19,7 +18,7 @@ from pathlib import Path
 
 URL = "https://web.cs.wpi.edu/~claypool/mmsys-dataset/2011/wow/wowah.rar"
 SIZE = 577_556_091
-# Filled in from the first verified download; see docs/LICENSE-MEMO.md.
+# SHA-256 of the archive as first downloaded; every later download must match it.
 SHA256 = "6aac2a06e40e6e51299206a3dd99db063dd54bd8839fbe233d340f80760d4b73"
 
 
@@ -57,27 +56,20 @@ def download(dest: Path) -> Path:
 
 
 def extract(rar: Path, dest: Path) -> Path:
-    """Extract with bsdtar (libarchive reads RAR); fall back to unrar/7z."""
+    """Extract with bsdtar, which reads RAR through libarchive."""
     out = dest / "wowah"
     if out.exists() and any(out.iterdir()):
         print(f"already extracted: {out}")
         return out
     out.mkdir(parents=True, exist_ok=True)
-    for cmd in (
-        ["bsdtar", "-xf", str(rar), "-C", str(out)],
-        ["unrar", "x", "-o+", str(rar), str(out) + "/"],
-        ["7z", "x", "-y", f"-o{out}", str(rar)],
-    ):
-        if shutil.which(cmd[0]):
-            print("extracting with", cmd[0])
-            subprocess.run(cmd, check=True)
-            return out
-    sys.exit("no RAR extractor found: install bsdtar (libarchive), unrar or 7z")
+    print("extracting with bsdtar")
+    subprocess.run(["bsdtar", "-xf", str(rar), "-C", str(out)], check=True)
+    return out
 
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--data", type=Path, default=Path("data"))
+    ap.add_argument("--data", type=Path, required=True)
     a = ap.parse_args(argv)
     raw = a.data / "raw"
     rar = download(raw)

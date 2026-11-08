@@ -1,5 +1,5 @@
 {
-  "model_version": "wowah-2026-11-07",
+  "model_version": "wowah-2026-11-08",
   "features": [
     "sessions",
     "session_minutes",

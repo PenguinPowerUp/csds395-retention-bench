@@ -8,8 +8,7 @@ Pengjun Lu, 2026-11-06. Every number below is read from `results/wowah/results.j
 | ------------------------------------------ | ----------------------------------------------------------------- |
 | Snapshot rows parsed                       | 36,513,634 (1,082 days with data, 24 empty days inside the range) |
 | New avatars (level ≤ 5 at first sighting) | 79,659                                                            |
-| Excluded, right-censored                   | 3                                                                 |
-| Excluded, next day empty                   | 159                                                               |
+| Excluded, next day not observed            | 162                                                               |
 | Eligible                                   | 79,497                                                            |
 | Returned on day 1                          | 21,399 (26.9%)                                                    |
 
@@ -38,7 +37,7 @@ Test return rate, which is the PR-AUC floor: 0.2071.
 
 Platt slope 0.892, intercept −0.013, fit on validation. Brier moves from 0.1245 to 0.1252, so calibration fit on validation made test slightly worse. The mean prediction on test is 0.212 before Platt and 0.229 after it, against an observed rate of 0.207. The likely explanation is that Platt learned the scale of a high-return window (validation set) and applied it to a low-return one (test set).
 
-![reliability](../results/wowah/reliability.png)
+![reliability](figures/reliability.png)
 
 Each row groups test avatars by their calibrated predicted probability $\hat p$; *Mean predicted* is that group's average $\hat p$ and *Observed* is the fraction that actually returned.
 
@@ -63,7 +62,7 @@ On test: precision 0.516, recall 0.663, F1 0.580; TP 2,184, FP 2,053, FN 1,110, 
 
 ## Decile lift
 
-![decile lift](../results/wowah/decile_lift.png)
+![decile lift](figures/decile_lift.png)
 
 Test avatars are ranked by $\hat p$ and split into ten equal groups, decile 1 holding the highest scores; *Return rate* is the fraction of each group that actually returned, and *Lift* is that rate divided by the test split return rate of 0.207.
 

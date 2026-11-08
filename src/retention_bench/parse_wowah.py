@@ -78,7 +78,7 @@ def day_dirs(root: Path) -> list[Path]:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--data", type=Path, default=Path("data"))
+    ap.add_argument("--data", type=Path, required=True)
     ap.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) - 1))
     a = ap.parse_args(argv)
     root = a.data / "raw" / "wowah"

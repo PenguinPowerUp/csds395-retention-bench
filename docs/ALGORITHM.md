@@ -84,7 +84,7 @@ drop i if d_i + 1 in empty_days       # collector was down, says nothing about i
 keep i only if new avatar             # level <= 5 at first sighting
 ```
 
-A session running from 23:50 to 00:20 makes the avatar active on both days, so it counts as a return: the rule is "any activity on $d_i + 1$". On WoWAH: 79,659 new avatars, 3 + 159 dropped, 79,497 kept, 21,399 returned (26.9%).
+A session running from 23:50 to 00:20 makes the avatar active on both days, so it counts as a return: the rule is "any activity on $d_i + 1$". On WoWAH: 79,659 new avatars, 162 dropped, 79,497 kept, 21,399 returned (26.9%).
 
 # 2. Temporal split
 
