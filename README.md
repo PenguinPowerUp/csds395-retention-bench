@@ -41,6 +41,8 @@ Then, with the environment active:
 
 `docs/RESULTS.md` gives the full result..
 
+`docs/LITERATURE.md` compares the task and the results with published work.
+
 ## Outputs
 
 - `results/wowah/results.json`: population and split, the four-model metric table, calibration, reliability bins, decile lift, the threshold confusion matrix, the random-split leakage check, and sensitivity runs.
@@ -61,7 +63,7 @@ src/retention_bench/
   evaluate.py      metrics, reliability, deciles, joint suppression
   run.py           the pipeline
 tests/             unit tests on invented rows
-docs/              licence memo, algorithm, results
+docs/              licence memo, algorithm, results, literature comparison
 docs/figures/      the two figures; scripts/plot_results.py draws them from results.json
 ```
 

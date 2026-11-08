@@ -181,7 +181,7 @@ threshold = argmax f1      # ties -> higher t
 | PR-AUC             | Area under precision-recall as the threshold sweeps from 1 to 0                   | Compare with the floor                      |
 | Floor              | Test return rate = no-skill PR-AUC                                                | 0.207 here                                  |
 | ROC-AUC            | P(random returner scores above random churner)                                    | Secondary; optimistic under skew            |
-| Brier              | mean $(\hat p_i - y_i)^2$                                                       | Lower is better; ranking and scale together |
+| Brier              | mean $(\hat p_i - y_i)^2$, the binary form; half of Brier's (1950) two-class score | Lower is better; ranking and scale together |
 | Reliability bins   | Bin by $\hat p$; compare mean $\hat p$ with observed return rate              | "When it says 30%, is it 30%?"              |
 | Decile lift        | Ten equal groups by $\hat p$; group rate / overall rate                         | "Top 10% return at k× the base rate"       |
 | Confusion          | TP, FP, FN, TN at the threshold, plus majority-class accuracy beside it           |                                             |
