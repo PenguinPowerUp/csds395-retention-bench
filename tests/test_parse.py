@@ -1,4 +1,4 @@
-from retention_bench.parse_wowah import parse_text
+from retention_bench.datasets.wowah.parse import parse_text
 
 SAMPLE = '''
 Persistent_Storage = {

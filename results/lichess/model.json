@@ -1,0 +1,71 @@
+{
+  "model_version": "lichess-2026-11-09",
+  "features": [
+    "sessions",
+    "session_minutes",
+    "games",
+    "wins",
+    "speeds"
+  ],
+  "transform": "log1p, then (u - mean) / scale with the train statistics below",
+  "mean": {
+    "sessions": 0.834638,
+    "session_minutes": 3.308408,
+    "games": 1.492791,
+    "wins": 0.794324,
+    "speeds": 0.846452
+  },
+  "scale": {
+    "sessions": 0.267523,
+    "session_minutes": 1.162691,
+    "games": 0.793846,
+    "wins": 0.873459,
+    "speeds": 0.229308
+  },
+  "coefficients": {
+    "sessions": 0.357189,
+    "session_minutes": 0.586119,
+    "games": -0.363001,
+    "wins": 0.40553,
+    "speeds": 0.088208
+  },
+  "intercept": -0.892959,
+  "calibration": {
+    "method": "platt",
+    "a": 1.167725,
+    "c": -0.046352,
+    "applies_to": "logit of P(return)"
+  },
+  "threshold": {
+    "value": 0.239237,
+    "rule": "max-F1 on validation",
+    "predict_return_if": ">= value"
+  },
+  "output": "P(return); churn probability is 1 - P(return)",
+  "split": {
+    "train": {
+      "first_cohort_date": "2013-04-01",
+      "last_cohort_date": "2014-02-01",
+      "cohort_dates": 307,
+      "rows": 70927
+    },
+    "validation": {
+      "first_cohort_date": "2014-02-02",
+      "last_cohort_date": "2014-04-01",
+      "cohort_dates": 59,
+      "rows": 23463
+    },
+    "test": {
+      "first_cohort_date": "2014-04-02",
+      "last_cohort_date": "2014-05-31",
+      "cohort_dates": 60,
+      "rows": 23876
+    }
+  },
+  "test": {
+    "pr_auc": 0.5441,
+    "pr_auc_floor": 0.2701,
+    "roc_auc": 0.7545,
+    "brier_calibrated": 0.1638
+  }
+}

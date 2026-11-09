@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Unit tests, then raw download to results. Run inside an activated environment
-# with this package installed.
+# Unit tests, then both datasets from raw download to results. Run inside an
+# activated environment with this package installed.
 set -euo pipefail
 cd "$(dirname "$0")"
 python -m pytest -q
-python -m retention_bench.download --data data
-python -m retention_bench.parse_wowah --data data
-python -m retention_bench.run --data data --out results/wowah
-python scripts/crosscheck_label.py data results/wowah/results.json
-echo "done: results/wowah/results.json, results/wowah/model.json"
+for ds in wowah lichess; do
+    python -m retention_bench.datasets.$ds --data data/$ds
+    python -m retention_bench.run --data data/$ds --out results/$ds
+    python -m retention_bench.datasets.$ds.crosscheck data/$ds results/$ds/results.json
+done
+echo "done: results/wowah and results/lichess"

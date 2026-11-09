@@ -26,18 +26,18 @@ Test return rate, which is the PR-AUC floor: 0.2071.
 
 ## Models, test split
 
-| Model                                 |         PR-AUC | ROC-AUC |  Brier |
-| ------------------------------------- | -------------: | ------: | -----: |
-| Majority class (everyone churns)      | 0.2071 (floor) |   0.500 | 0.1691 |
-| Session minutes, single feature       |         0.5264 |   0.771 | 0.1310 |
-| Logistic regression, L2               |         0.5578 |   0.803 | 0.1245 |
-| Logistic regression, Platt-calibrated |         0.5578 |   0.803 | 0.1252 |
+| Model                                 |              PR-AUC | ROC-AUC |  Brier |
+| ------------------------------------- | ------------------: | ------: | -----: |
+| Majority class (everyone churns)      |      0.2071 (floor) |   0.500 | 0.1691 |
+| Session minutes, single feature       | 0.5264, 2.54x floor |   0.771 | 0.1310 |
+| Logistic regression, L2               | 0.5578, 2.69x floor |   0.803 | 0.1245 |
+| Logistic regression, Platt-calibrated | 0.5578, 2.69x floor |   0.803 | 0.1252 |
 
 ## Calibration
 
 Platt slope 0.892, intercept −0.013, fit on validation. Brier moves from 0.1245 to 0.1252, so calibration fit on validation made test slightly worse. The mean prediction on test is 0.212 before Platt and 0.229 after it, against an observed rate of 0.207. The likely explanation is that Platt learned the scale of a high-return window (validation set) and applied it to a low-return one (test set).
 
-![reliability](figures/reliability.png)
+![reliability](figures/wowah_reliability.png)
 
 Each row groups test avatars by their calibrated predicted probability $\hat p$; *Mean predicted* is that group's average $\hat p$ and *Observed* is the fraction that actually returned.
 
@@ -62,7 +62,7 @@ On test: precision 0.516, recall 0.663, F1 0.580; TP 2,184, FP 2,053, FN 1,110, 
 
 ## Decile lift
 
-![decile lift](figures/decile_lift.png)
+![decile lift](figures/wowah_decile_lift.png)
 
 Test avatars are ranked by $\hat p$ and split into ten equal groups, decile 1 holding the highest scores; *Return rate* is the fraction of each group that actually returned, and *Lift* is that rate divided by the test split return rate of 0.207.
 

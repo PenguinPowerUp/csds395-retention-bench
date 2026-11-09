@@ -1,0 +1,391 @@
+{
+  "title": "retention-bench: day-one return on the Lichess open database (rated games, 2013-01 to 2014-06), new accounts, temporal split",
+  "dataset": {
+    "name": "Lichess open database, standard rated games",
+    "citation": "Lichess open database, https://database.lichess.org/, CC0, files 2013-01 to 2014-06.",
+    "source": "https://database.lichess.org/standard/",
+    "unit": "account (username); activity is rated real-time games only",
+    "clock": "UTC; days are UTC calendar days"
+  },
+  "generated_at": "2026-11-09T00:09:54Z",
+  "environment": {
+    "python": "3.14.6",
+    "scikit-learn": "1.9.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.4"
+  },
+  "label": {
+    "horizon_days": 1,
+    "new_player_rule": "first rated game on or after 2013-04-01 and by 2014-05-31, rated exactly 1500 with a rating change of at least 50 points; strict: first game on or after 2013-07-01"
+  },
+  "features": [
+    "sessions",
+    "session_minutes",
+    "games",
+    "wins",
+    "speeds"
+  ],
+  "positive_class": "returned = 1",
+  "population": {
+    "eligible": 118266,
+    "returning": 34811,
+    "returning_rate": 0.2943,
+    "returning_rate_by_cohort_year": {
+      "2013": {
+        "eligible": 58568,
+        "returning_rate": 0.3194
+      },
+      "2014": {
+        "eligible": 59698,
+        "returning_rate": 0.2697
+      }
+    },
+    "returning_rate_by_split": {
+      "train": 0.3127,
+      "validation": 0.2635,
+      "test": 0.2701
+    },
+    "midnight": {
+      "share_online_in_last_10_min_of_cohort_day": 0.0434,
+      "return_rate_online_at_midnight": 0.7701,
+      "return_rate_others": 0.2727
+    },
+    "counts": {
+      "new_players": 118266,
+      "excluded_next_day_not_observed": 0,
+      "excluded_partial_outage": 0,
+      "excluded_online_at_midnight": 0,
+      "eligible": 118266,
+      "empty_days": []
+    },
+    "split": {
+      "train": {
+        "first_cohort_date": "2013-04-01",
+        "last_cohort_date": "2014-02-01",
+        "cohort_dates": 307,
+        "rows": 70927
+      },
+      "validation": {
+        "first_cohort_date": "2014-02-02",
+        "last_cohort_date": "2014-04-01",
+        "cohort_dates": 59,
+        "rows": 23463
+      },
+      "test": {
+        "first_cohort_date": "2014-04-02",
+        "last_cohort_date": "2014-05-31",
+        "cohort_dates": 60,
+        "rows": 23876
+      }
+    }
+  },
+  "models": [
+    {
+      "name": "majority class (everyone churns)",
+      "pr_auc": 0.2701,
+      "pr_auc_floor": 0.2701,
+      "roc_auc": 0.5,
+      "brier": 0.199,
+      "accuracy": 0.7299
+    },
+    {
+      "name": "session_minutes (single feature)",
+      "pr_auc": 0.5093,
+      "pr_auc_floor": 0.2701,
+      "roc_auc": 0.7347,
+      "brier": 0.1702
+    },
+    {
+      "name": "logistic regression (L2)",
+      "pr_auc": 0.5441,
+      "pr_auc_floor": 0.2701,
+      "roc_auc": 0.7545,
+      "brier": 0.1644
+    },
+    {
+      "name": "logistic regression (Platt-calibrated)",
+      "pr_auc": 0.5441,
+      "pr_auc_floor": 0.2701,
+      "roc_auc": 0.7545,
+      "brier": 0.1638
+    }
+  ],
+  "calibration": {
+    "method": "Platt (sigmoid) on the logistic model's logit, fit on validation",
+    "slope": 1.1677,
+    "intercept": -0.0464,
+    "brier_before": 0.1644,
+    "brier_after": 0.1638,
+    "reliability_test": [
+      {
+        "bin": "0-0.1",
+        "players": 3515,
+        "returning": 233,
+        "not_returning": 3282,
+        "mean_predicted": 0.0747,
+        "observed_returning": 0.0663
+      },
+      {
+        "bin": "0.1-0.2",
+        "players": 8109,
+        "returning": 1200,
+        "not_returning": 6909,
+        "mean_predicted": 0.1486,
+        "observed_returning": 0.148
+      },
+      {
+        "bin": "0.2-0.3",
+        "players": 4598,
+        "returning": 1191,
+        "not_returning": 3407,
+        "mean_predicted": 0.2455,
+        "observed_returning": 0.259
+      },
+      {
+        "bin": "0.3-0.4",
+        "players": 2807,
+        "returning": 1083,
+        "not_returning": 1724,
+        "mean_predicted": 0.3456,
+        "observed_returning": 0.3858
+      },
+      {
+        "bin": "0.4-0.5",
+        "players": 1718,
+        "returning": 785,
+        "not_returning": 933,
+        "mean_predicted": 0.4467,
+        "observed_returning": 0.4569
+      },
+      {
+        "bin": "0.5-0.6",
+        "players": 1253,
+        "returning": 668,
+        "not_returning": 585,
+        "mean_predicted": 0.5468,
+        "observed_returning": 0.5331
+      },
+      {
+        "bin": "0.6-0.7",
+        "players": 878,
+        "returning": 549,
+        "not_returning": 329,
+        "mean_predicted": 0.648,
+        "observed_returning": 0.6253
+      },
+      {
+        "bin": "0.7-0.8",
+        "players": 626,
+        "returning": 439,
+        "not_returning": 187,
+        "mean_predicted": 0.748,
+        "observed_returning": 0.7013
+      },
+      {
+        "bin": "0.8-1",
+        "players": 372,
+        "returning": 301,
+        "not_returning": 71,
+        "mean_predicted": 0.848,
+        "observed_returning": 0.8091
+      }
+    ]
+  },
+  "threshold": {
+    "model": "logistic regression (Platt-calibrated)",
+    "rule": "the calibrated P(return) cut that maximises F1 on the validation split, predicting returning at or above it; test labels never reach the choice",
+    "chosen_on": "validation",
+    "value": 0.2392,
+    "majority_accuracy": 0.7299,
+    "test": {
+      "accuracy": 0.6847,
+      "precision": 0.4466,
+      "recall": 0.6992,
+      "f1": 0.5451,
+      "confusion": {
+        "tp": 4509,
+        "fp": 5587,
+        "fn": 1940,
+        "tn": 11840
+      }
+    }
+  },
+  "lift_test": {
+    "method": "deciles of calibrated P(return) on test, decile 1 the highest; adjacent deciles merged until every count meets the minimum, jointly with the other tables; lift = group return rate / test return rate",
+    "deciles": [
+      {
+        "score_band": "0.5556-1",
+        "players": 2387,
+        "returning": 1590,
+        "not_returning": 797,
+        "deciles": "1",
+        "return_rate": 0.6661,
+        "lift": 2.4661
+      },
+      {
+        "score_band": "0.4035-0.5556",
+        "players": 2388,
+        "returning": 1114,
+        "not_returning": 1274,
+        "deciles": "2",
+        "return_rate": 0.4665,
+        "lift": 1.7271
+      },
+      {
+        "score_band": "0.3142-0.4035",
+        "players": 2387,
+        "returning": 941,
+        "not_returning": 1446,
+        "deciles": "3",
+        "return_rate": 0.3942,
+        "lift": 1.4594
+      },
+      {
+        "score_band": "0.2524-0.3142",
+        "players": 2388,
+        "returning": 714,
+        "not_returning": 1674,
+        "deciles": "4",
+        "return_rate": 0.299,
+        "lift": 1.107
+      },
+      {
+        "score_band": "0.2061-0.2524",
+        "players": 2388,
+        "returning": 597,
+        "not_returning": 1791,
+        "deciles": "5",
+        "return_rate": 0.25,
+        "lift": 0.9256
+      },
+      {
+        "score_band": "0.1719-0.2061",
+        "players": 2390,
+        "returning": 451,
+        "not_returning": 1939,
+        "deciles": "6-7",
+        "return_rate": 0.1887,
+        "lift": 0.6986
+      },
+      {
+        "score_band": "0.1417-0.1719",
+        "players": 2385,
+        "returning": 386,
+        "not_returning": 1999,
+        "deciles": "7",
+        "return_rate": 0.1618,
+        "lift": 0.599
+      },
+      {
+        "score_band": "0.1176-0.1417",
+        "players": 2446,
+        "returning": 312,
+        "not_returning": 2134,
+        "deciles": "8-9",
+        "return_rate": 0.1276,
+        "lift": 0.4724
+      },
+      {
+        "score_band": "0.08752-0.1176",
+        "players": 2383,
+        "returning": 211,
+        "not_returning": 2172,
+        "deciles": "9-10",
+        "return_rate": 0.0885,
+        "lift": 0.3277
+      },
+      {
+        "score_band": "0-0.08752",
+        "players": 2334,
+        "returning": 133,
+        "not_returning": 2201,
+        "deciles": "10",
+        "return_rate": 0.057,
+        "lift": 0.211
+      }
+    ],
+    "top": {
+      "deciles": "1",
+      "lift": 2.4661
+    }
+  },
+  "min_cell": 10,
+  "suppression": "every cut used by the reliability bins, the decile groups and the threshold is checked together; each band between consecutive cuts holds at least 10 returning and 10 not-returning players, so no count under the minimum is recoverable by differencing tables",
+  "standardized_coefficients": {
+    "sessions": 0.3572,
+    "session_minutes": 0.5861,
+    "games": -0.363,
+    "wins": 0.4055,
+    "speeds": 0.0882
+  },
+  "intercept": -0.893,
+  "hyperparameters": {
+    "penalty": "l2",
+    "C": 1.0,
+    "inputs": "log1p, standardized with train statistics"
+  },
+  "leakage_check": {
+    "method": "identical features and model, rows assigned to train/validation/test uniformly at random with the same fractions; a large gain over the temporal split indicates time-correlated information the temporal split correctly withholds",
+    "random_split": {
+      "pr_auc": 0.5419,
+      "pr_auc_floor": 0.292,
+      "roc_auc": 0.7328,
+      "brier_calibrated": 0.1759,
+      "pr_auc_over_floor": 1.856
+    },
+    "temporal_split": {
+      "pr_auc": 0.5441,
+      "pr_auc_floor": 0.2701,
+      "roc_auc": 0.7545,
+      "brier_calibrated": 0.1638,
+      "pr_auc_over_floor": 2.014
+    }
+  },
+  "sensitivity": {
+    "six_month_burn_in": {
+      "eligible": 105025,
+      "returning_rate": 0.2907,
+      "pr_auc": 0.5435,
+      "pr_auc_floor": 0.2721,
+      "roc_auc": 0.7521,
+      "brier_calibrated": 0.1653,
+      "counts": {
+        "new_players": 105025,
+        "excluded_next_day_not_observed": 0,
+        "excluded_partial_outage": 0,
+        "excluded_online_at_midnight": 0,
+        "eligible": 105025
+      }
+    },
+    "strict_return_new_session_next_day": {
+      "eligible": 118266,
+      "returning_rate": 0.2858,
+      "pr_auc": 0.534,
+      "pr_auc_floor": 0.2624,
+      "roc_auc": 0.7544,
+      "brier_calibrated": 0.1613,
+      "counts": {
+        "new_players": 118266,
+        "excluded_next_day_not_observed": 0,
+        "excluded_partial_outage": 0,
+        "excluded_online_at_midnight": 0,
+        "eligible": 118266
+      }
+    },
+    "drop_players_online_at_midnight": {
+      "eligible": 113130,
+      "returning_rate": 0.2727,
+      "pr_auc": 0.5149,
+      "pr_auc_floor": 0.2508,
+      "roc_auc": 0.752,
+      "brier_calibrated": 0.158,
+      "counts": {
+        "new_players": 118266,
+        "excluded_next_day_not_observed": 0,
+        "excluded_partial_outage": 0,
+        "excluded_online_at_midnight": 5136,
+        "eligible": 113130
+      }
+    }
+  }
+}

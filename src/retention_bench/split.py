@@ -13,6 +13,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+import temporal_leak as tl
 
 FRACTIONS = (0.6, 0.8)
 PARTS = ("train", "validation", "test")
@@ -64,11 +65,4 @@ def temporal_split(cohort_date: pd.Series, fractions: tuple[float, float] = FRAC
 
 def random_split(n: int, fractions: tuple[float, float], seed: int) -> Split:
     """Only for the leakage sanity check: same fractions, rows shuffled."""
-    rng = np.random.default_rng(seed)
-    order = rng.permutation(n)
-    part = np.empty(n, dtype=object)
-    a, b = int(fractions[0] * n), int(fractions[1] * n)
-    part[order[:a]] = "train"
-    part[order[a:b]] = "validation"
-    part[order[b:]] = "test"
-    return Split(part=pd.Series(part))
+    return Split(part=pd.Series(tl.random_split(n, fractions, seed)))

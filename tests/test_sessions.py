@@ -1,6 +1,6 @@
 import pandas as pd
 
-from retention_bench.sessions import per_avatar_day
+from retention_bench.datasets.wowah.sessions import per_avatar_day
 
 
 def snaps(rows):

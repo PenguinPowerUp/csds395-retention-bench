@@ -1,4 +1,4 @@
-"""From 10-minute snapshots to per-avatar-day activity and day-zero features.
+"""WoWAH: from 10-minute snapshots to per-avatar-day activity.
 
 A session is a run of consecutive snapshots of one avatar with gaps of at most
 SESSION_GAP minutes (one missing sample is tolerated). Session minutes are
@@ -57,20 +57,7 @@ def per_avatar_day(snap: pd.DataFrame) -> pd.DataFrame:
 def first_sightings(snap: pd.DataFrame) -> pd.DataFrame:
     """Level, class and day at each avatar's first snapshot."""
     s = snap.sort_values(["avatar", "ts"])
-    first = s.groupby("avatar").first()[["ts", "level", "cls"]].rename(columns={"level": "first_level", "cls": "first_class"})
+    # drop_duplicates, not groupby().first(): first() skips missing values and would mix snapshots
+    first = s.drop_duplicates("avatar", keep="first").set_index("avatar")[["ts", "level", "cls"]].rename(columns={"level": "first_level", "cls": "first_class"})
     first["first_day"] = first["ts"].dt.normalize()
     return first.drop(columns="ts").reset_index()
-
-
-def day_zero_features(pad: pd.DataFrame, labels: pd.DataFrame, first: pd.DataFrame) -> pd.DataFrame:
-    """Join label rows to their cohort-day activity row. Features use the cohort day only."""
-    f = labels.merge(pad, left_on=["player", "cohort_date"], right_on=["avatar", "day"], how="left")
-    f = f.merge(first[["avatar", "first_level"]], on="avatar", how="left")
-    f["levels_gained"] = (f["max_level"] - f["first_level"]).clip(lower=0)
-    for c in FEATURES:
-        f[c] = f[c].fillna(0)
-    return f[["player", "cohort_date", "returned", *FEATURES]]
-
-
-def activity_days(pad: pd.DataFrame) -> pd.DataFrame:
-    return pad[["avatar", "day"]].rename(columns={"avatar": "player"})

@@ -7,7 +7,7 @@
     "unit": "avatar (character), one realm, Horde; a new avatar is not necessarily a new player",
     "clock": "dataset-native query time; days are calendar days in that clock"
   },
-  "generated_at": "2026-11-08T18:52:58Z",
+  "generated_at": "2026-11-09T00:08:32Z",
   "environment": {
     "python": "3.14.6",
     "scikit-learn": "1.9.1",
@@ -15,8 +15,8 @@
     "numpy": "2.5.4"
   },
   "label": {
-    "max_first_level": 5,
-    "horizon_days": 1
+    "horizon_days": 1,
+    "new_player_rule": "level at first sighting <= 5; strict: level 1"
   },
   "features": [
     "sessions",
@@ -59,7 +59,7 @@
       "return_rate_others": 0.2049
     },
     "counts": {
-      "new_avatars": 79659,
+      "new_players": 79659,
       "excluded_next_day_not_observed": 162,
       "excluded_partial_outage": 0,
       "excluded_online_at_midnight": 0,
@@ -364,7 +364,7 @@
       "roc_auc": 0.7963,
       "brier_calibrated": 0.1104,
       "counts": {
-        "new_avatars": 59654,
+        "new_players": 59654,
         "excluded_next_day_not_observed": 112,
         "excluded_partial_outage": 0,
         "excluded_online_at_midnight": 0,
@@ -379,7 +379,7 @@
       "roc_auc": 0.8057,
       "brier_calibrated": 0.1266,
       "counts": {
-        "new_avatars": 79659,
+        "new_players": 79659,
         "excluded_next_day_not_observed": 162,
         "excluded_partial_outage": 2033,
         "excluded_online_at_midnight": 0,
@@ -394,7 +394,7 @@
       "roc_auc": 0.7973,
       "brier_calibrated": 0.1201,
       "counts": {
-        "new_avatars": 79659,
+        "new_players": 79659,
         "excluded_next_day_not_observed": 162,
         "excluded_partial_outage": 0,
         "excluded_online_at_midnight": 0,
@@ -409,7 +409,7 @@
       "roc_auc": 0.7791,
       "brier_calibrated": 0.1103,
       "counts": {
-        "new_avatars": 79659,
+        "new_players": 79659,
         "excluded_next_day_not_observed": 162,
         "excluded_partial_outage": 0,
         "excluded_online_at_midnight": 7361,

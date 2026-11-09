@@ -6,7 +6,7 @@ files, one per 10-minute sample. Each file holds a Lua saved-variable array
 dummy, query time, query sequence number, avatar id, guild, level, race, class,
 zone, dummy, dummy.
 
-Output: ``data/snapshots.parquet`` with columns ts, avatar, guild, level, race,
+Output: ``data/wowah/snapshots.parquet`` with columns ts, avatar, guild, level, race,
 cls, zone, day_dir, sample. ``sample`` is the log file name (hh-mm-ss), one per
 10-minute sampling round; records inside one round carry their own query times,
 a few seconds to minutes apart. Timestamps are kept in the dataset's own clock (the collector ran

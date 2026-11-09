@@ -1,6 +1,6 @@
 # D1 Return Prediction: Algorithm
 
-The method retention-bench runs on WoWAH, end to end. Written from the public description of the method and the standard literature; no company code, data or figure. Numbers in examples are the fitted values in `results/wowah/model.json`.
+The method retention-bench runs, end to end. It is written for WoWAH; the same method runs unchanged on the Lichess open database, whose data definitions are in the last section. Written from the public description of the method and the standard literature; no company code, data or figure. Numbers in examples are the fitted values in `results/wowah/model.json`.
 
 # Data
 
@@ -203,3 +203,37 @@ threshold = argmax f1      # ties -> higher t
 5. Test rows touched once, in section 7.
 6. Right-censored and outage cohorts dropped, never labelled 0.
 7. Sanity check: the same model on a random split should not score far higher than on the temporal split.
+
+The temporal-leak package automates part of this checklist on every run:
+
+- **Checks 1 and 3, and part of check 4.** `check_before_cutoff`, `check_temporal_split` and `check_fit_rows` run on every fit; `check_fit_rows` confirms that no fitted step uses test rows. A violation stops the run.
+- **Check 6.** `empty_periods` and `observable` find the cohorts to drop.
+- **Check 7.** `shuffle_test` runs the random split; its result is reported in `results.json`.
+
+Checks 2 and 5 are not checked at run time; they hold by how the code is written.
+
+# Lichess
+
+The Lichess files hold one header block per rated game. Everything from section 1 onwards is unchanged; only the data definitions differ.
+
+| Term | Meaning |
+| --- | --- |
+| Account | One username, the unit of prediction |
+| Day | UTC calendar day |
+| Game | One rated real-time game; correspondence games and games a player played against themselves are dropped |
+| Active on a day | Starts at least one rated game that day. A game running past midnight does not make the next day active |
+| Game length | Lichess's own estimate, initial + 40 × increment seconds; the files carry no clock data before April 2017 |
+| Session | Consecutive games of one account whose start falls within 30 min of the previous game's estimated end |
+| Session minutes | First start to last estimated end, per session; minutes after midnight are not credited to the day before |
+| New account | First rated game rated exactly 1500 with a rating change of at least 50, first seen between 2013-04-01 and 2014-05-31. Every new Lichess rating starts at 1500; 2013-01 to 2013-03 is a burn-in that marks existing accounts |
+
+Five features, all from games started on $d_i$:
+
+| Feature | raw = |
+| --- | --- |
+| `sessions` | Number of sessions on $d_i$ |
+| `session_minutes` | Sum of session minutes on $d_i$ |
+| `games` | Number of games started on $d_i$ |
+| `wins` | Number of those games won |
+| `speeds` | Distinct speed classes played (bullet, blitz, classical) |
+

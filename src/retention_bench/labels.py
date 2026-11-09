@@ -18,6 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import pandas as pd
+import temporal_leak as tl
 
 HORIZON_DAYS = 1
 
@@ -32,32 +33,26 @@ class LabelResult:
     excluded_outage: int         # players dropped because day d+1 was empty
 
 
-def empty_days_between(active_days: pd.Series, first: pd.Timestamp, last: pd.Timestamp) -> list[pd.Timestamp]:
-    """Calendar days in [first, last] with no activity from any player."""
-    seen = set(pd.to_datetime(active_days.unique()).normalize())
-    return [d for d in pd.date_range(first, last, freq="D") if d not in seen]
-
-
 def build_labels(activity: pd.DataFrame, player: str = "player", day: str = "day") -> LabelResult:
     """activity: one row per (player, day) with activity. Days are datetime64 at midnight."""
     act = activity[[player, day]].drop_duplicates()
     act = act.assign(**{day: pd.to_datetime(act[day]).dt.normalize()})
-    first_day, last_day = act[day].min(), act[day].max()
-    empties = empty_days_between(act[day], first_day, last_day)
-    empty_set = set(empties)
+    last_day = act[day].max()
+    empties = tl.empty_periods(act[day], freq="D")
 
     cohort = act.groupby(player, as_index=False)[day].min().rename(columns={day: "cohort_date"})
     next_day = cohort["cohort_date"] + pd.Timedelta(days=HORIZON_DAYS)
 
-    censored = next_day > last_day
-    outage = next_day.isin(empty_set) & ~censored
+    why = tl.observable(cohort["cohort_date"], pd.Timedelta(days=HORIZON_DAYS), last_day, empties)
+    censored = (why == "censored").to_numpy()
+    outage = (why == "empty").to_numpy()
     keep = ~(censored | outage)
 
     # returned: active on exactly cohort_date + 1
     key = act.set_index([player, day]).index
     returned = pd.MultiIndex.from_arrays([cohort[player], next_day]).isin(key).astype(int)
 
-    reason = pd.Series("", index=cohort.index).mask(censored, "censored").mask(outage, "outage")
+    reason = why.replace({"empty": "outage"}).to_numpy()
     all_rows = cohort.assign(returned=returned, exclusion=reason)
     frame = all_rows[keep].drop(columns="exclusion").reset_index(drop=True)
     return LabelResult(

@@ -1,7 +1,10 @@
-"""Independent recount of the population and label, by a different route than the pipeline.
+"""WoWAH: independent recount of the population and label, by a different route than the pipeline.
 
-Reads only (ts, avatar, level), builds per-avatar sets of active days with plain
-Python, applies the written rules, and prints counts to compare with results.json.
+Reads only (ts, avatar, level) from the parsed snapshots, not the canonical tables,
+builds per-avatar sets of active days with plain Python, applies the written rules,
+and compares the counts with results.json.
+
+Usage: python -m retention_bench.datasets.wowah.crosscheck DATA_DIR RESULTS_JSON
 """
 
 from __future__ import annotations
@@ -14,10 +17,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-_, data_arg, results_arg = sys.argv  # usage: crosscheck_label.py DATA_DIR RESULTS_JSON
+from .sessions import MAX_FIRST_LEVEL as max_first_level
+
+_, data_arg, results_arg = sys.argv
 data = Path(data_arg)
 res = json.loads(Path(results_arg).read_text())
-max_first_level = res["label"]["max_first_level"]
 
 snap = pd.read_parquet(data / "snapshots.parquet", columns=["ts", "avatar", "level"])
 snap = snap[snap["ts"] >= "2006-01-01"]
