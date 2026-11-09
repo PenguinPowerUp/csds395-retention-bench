@@ -42,7 +42,7 @@ Then, with the environment active:
 
 ## Results
 
-`docs/RESULTS-WOWAH.md` and `docs/RESULTS-LICHESS.md` give the full results of each dataset.
+`docs/MAIN-FINDINGS.md` summarises the findings across both datasets. `docs/RESULTS-WOWAH.md` and `docs/RESULTS-LICHESS.md` give the full results of each dataset.
 
 `docs/LITERATURE.md` compares the task and the results with published work.
 
