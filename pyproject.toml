@@ -14,7 +14,7 @@ dependencies = [
     "pandas>=2.2",
     "pyarrow>=16",
     "scikit-learn>=1.5",
-    "temporal-leak @ git+https://github.com/PenguinPowerUp/temporal-leak@v0.1.0",
+    "temporal-leak @ git+https://github.com/PenguinPowerUp/csds395-temporal-leak@v0.1.0",
     "zstandard>=0.22",
 ]
 

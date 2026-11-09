@@ -72,7 +72,7 @@ docs/figures/        the figures; scripts/plot_results.py draws them from result
 
 Adding a dataset means writing one adapter under `datasets/` that produces the canonical tables described in `canonical.py`; nothing else changes.
 
-The leakage checks come from the separate temporal-leak package (https://github.com/PenguinPowerUp/temporal-leak).
+The leakage checks come from the separate temporal-leak package (https://github.com/PenguinPowerUp/csds395-temporal-leak).
 
 ## Citation
 
